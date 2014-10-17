@@ -27,7 +27,7 @@
 <body>
     <div class="header">
         <h4>
-            Your inbox mail
+            Your inbox mail (Max 10 items)
         </h4>
     </div>
 
@@ -45,7 +45,7 @@
                     @foreach (var mail in Model.Mails)
                     {
                         <tr>
-                            <td class="col-xs-3 col-sm-3 col-md-3">@mail.From.Name</td>
+                            <td class="col-xs-3 col-sm-3 col-md-3">@mail.From.EmailAddress.Name</td>
                             <td class="col-xs-7 col-sm-7 col-md-7">@mail.Subject</td>
                             <td class="col-xs-2 col-sm-2 col-md-2">@mail.DateTimeReceived.ToShortDateString()</td>
                         </tr>

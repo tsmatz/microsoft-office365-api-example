@@ -20,6 +20,11 @@ namespace O365APISample.Models
 
     public class MailFrom
     {
+        public MailEmailAddress EmailAddress { get; set; }
+    }
+
+    public class MailEmailAddress
+    {
         public string Name { get; set; }
         public string Address { get; set; }
     }
