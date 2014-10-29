@@ -66,7 +66,7 @@ namespace O365APISample.Controllers
             cl2.DefaultRequestHeaders.Authorization
               = new AuthenticationHeaderValue(tokenType, accessToken);
             var resMsg2 =
-              cl2.GetAsync("https://outlook.office365.com/ews/odata/Me/Folders/Inbox/Messages?$orderby=DateTimeSent%20desc&$top=20&$select=Subject,DateTimeReceived,From").Result;
+              cl2.GetAsync("https://outlook.office365.com/api/v1.0/me/messages?$orderby=DateTimeSent%20desc&$top=20&$select=Subject,DateTimeReceived,From").Result;
             var resStr2 = resMsg2.Content.ReadAsStringAsync().Result;
             JObject json2 = JObject.Parse(resStr2);
             IEnumerable<MailItem> mails = JsonConvert.DeserializeObject<IEnumerable<MailItem>>(json2["value"].ToString());
