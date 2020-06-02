@@ -23,12 +23,10 @@ namespace O365APISample.Controllers
             // redirect to Azure AD (and returning code)
             if(string.IsNullOrEmpty(code))
             {
-                var redirectUri = ConfigurationManager.AppSettings["RedirectUri"];
                 var clientId = ConfigurationManager.AppSettings["ClientId"];
-                var resource = ConfigurationManager.AppSettings["Resource"];
-                return Redirect(string.Format("https://login.windows.net/common/oauth2/authorize?response_type=code&client_id={0}&resource={1}&redirect_uri={2}",
+                var redirectUri = ConfigurationManager.AppSettings["RedirectUri"];
+                return Redirect(string.Format("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id={0}&scope=https%3a%2f%2fgraph.microsoft.com%2fmail.read+offline_access&redirect_uri={1}",
                     HttpUtility.UrlEncode(clientId),
-                    HttpUtility.UrlEncode(resource),
                     HttpUtility.UrlEncode(redirectUri)));
             }
 
@@ -45,10 +43,14 @@ namespace O365APISample.Controllers
             requestBody.Add(
                 new KeyValuePair<string, string>("client_secret",
                     ConfigurationManager.AppSettings["ClientSecret"]));
+            // &scope=https%3A%2F%2Fgraph.microsoft.com%2Fmail.read
+            requestBody.Add(
+                new KeyValuePair<string, string>("scope",
+                    @"https://graph.microsoft.com/mail.read"));
             requestBody.Add(
                 new KeyValuePair<string, string>("redirect_uri",
                     ConfigurationManager.AppSettings["RedirectUri"]));
-            var resMsg1 = cl1.PostAsync("https://login.windows.net/common/oauth2/token",
+            var resMsg1 = cl1.PostAsync("https://login.microsoftonline.com/common/oauth2/v2.0/token",
                 new FormUrlEncodedContent(requestBody)).Result;
             var resStr1 = resMsg1.Content.ReadAsStringAsync().Result;
             JObject json1 = JObject.Parse(resStr1);
@@ -65,8 +67,10 @@ namespace O365APISample.Controllers
             cl2.DefaultRequestHeaders.Accept.Add(acceptHeader);
             cl2.DefaultRequestHeaders.Authorization
               = new AuthenticationHeaderValue(tokenType, accessToken);
+            //var resMsg2 =
+            //  cl2.GetAsync("https://graph.microsoft.com/v1.0/me/messages?$orderby=receivedDateTime%20desc&$top=20&$select=subject,receivedDateTime,from").Result;
             var resMsg2 =
-              cl2.GetAsync("https://outlook.office365.com/api/v1.0/me/messages?$orderby=DateTimeSent%20desc&$top=20&$select=Subject,DateTimeReceived,From").Result;
+              cl2.GetAsync("https://graph.microsoft.com/v1.0/me/mailFolders/Inbox/messages?$orderby=receivedDateTime%20desc&$top=20&$select=subject,receivedDateTime,from").Result;
             var resStr2 = resMsg2.Content.ReadAsStringAsync().Result;
             JObject json2 = JObject.Parse(resStr2);
             IEnumerable<MailItem> mails = JsonConvert.DeserializeObject<IEnumerable<MailItem>>(json2["value"].ToString());
