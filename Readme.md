@@ -1,4 +1,4 @@
-# Microsoft Graph Sample Application
+# C# Example for Microsoft Graph (Outlook)
 
 This is minimal implementation for Microsoft Graph with Azure AD authentication and authorization.
 
